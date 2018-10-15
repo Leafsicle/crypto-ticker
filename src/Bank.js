@@ -3,9 +3,30 @@ import Coin from './Coin'
 import Coins from './Coins.json'
 
 class Bank extends Component {
+	constructor(props) {
+		super(props)
+		this.state = { coins: [] }
+	}
+	fetchData = () => {
+		fetch('https://api.coinmarketcap.com/v2/ticker/?limit=100')
+			.then(response => {
+				return response.json()
+			})
+			.then(myJson => {
+				const newData = Object.values(myJson.data)
+				this.setState({ coins: newData })
+			})
+	}
+	componentDidMount() {
+		this.fetchData()
+		setInterval(() => {
+			this.fetchData()
+		}, 10000)
+	}
+
 	render() {
-		let coins = Object.keys(Coins.data).map(id => {
-			let coin = Coins.data[id]
+		let coins = Object.keys(this.state.coins).map(id => {
+			let coin = this.state.coins[id]
 			return (
 				<Coin
 					ranking={coin.rank}
